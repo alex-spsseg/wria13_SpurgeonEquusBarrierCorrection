@@ -1,0 +1,63 @@
+{
+  "name": "As-Built Site Visit",
+  "sites": [
+    {
+      "site_id": "dji_20260910094409_0004_d",
+      "display_name": "Overview (aerial)",
+      "lat": 46.95626766666667,
+      "lng": -122.79679327777778
+    },
+    {
+      "site_id": "dji_20260910094215_0003_d",
+      "display_name": "Downstream View (aerial)",
+      "lat": 46.956131750000004,
+      "lng": -122.79652727777777
+    },
+    {
+      "site_id": "img_20260910_092432_00_982",
+      "display_name": "Stream: Downstream (ground)",
+      "lat": 46.95622222222222,
+      "lng": -122.79669444444444
+    },
+    {
+      "site_id": "img_20260910_092229_00_980",
+      "display_name": "Stream: Upstream (ground)",
+      "lat": 46.95627777777778,
+      "lng": -122.79686111111111
+    },
+    {
+      "site_id": "img_20260910_092340_00_981",
+      "display_name": "Stream: Underneath View (ground)",
+      "lat": 46.956250000000004,
+      "lng": -122.79680555555555
+    },
+    {
+      "site_id": "dji_20260910093956_0001_d",
+      "display_name": "Upstream View (aerial)",
+      "lat": 46.95632972222222,
+      "lng": -122.79711083333333
+    },
+    {
+      "site_id": "img_20260910_092552_00_984",
+      "display_name": "Road: Bridge Deck View",
+      "lat": 46.95622222222222,
+      "lng": -122.79680555555555
+    },
+    {
+      "site_id": "img_20260910_092626_00_985",
+      "display_name": "Road: North View",
+      "lat": 46.95655555555556,
+      "lng": -122.79683333333332
+    },
+    {
+      "site_id": "img_20260910_092523_00_983",
+      "display_name": "Road: South View",
+      "lat": 46.95605555555556,
+      "lng": -122.79677777777778
+    }
+  ],
+  "basemap_type": "esri_tile",
+  "basemap_url": "https://tiles.arcgis.com/tiles/buuvDFFARQiOEbVZ/arcgis/rest/services/SpurgeonEquusCulvert_20260910_ortho/MapServer/tile/{z}/{y}/{x}",
+  "forward_label": "Forward",
+  "backward_label": "Back"
+}

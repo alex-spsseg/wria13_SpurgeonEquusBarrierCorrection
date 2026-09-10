@@ -1,0 +1,104 @@
+{
+  "mode": "single",
+  "format": "raw",
+  "yaw_1": 0.5223742645245029,
+  "pitch_1": 1.5707963267948966,
+  "yaw_2": 0.0,
+  "pitch_2": 0.0,
+  "lat": 46.95626766666667,
+  "lng": -122.79679327777778,
+  "label_1": "DJI_20260910094409_0004_D (2026/09/10)",
+  "label_2": "",
+  "autorotate": false,
+  "hotspots_1": [
+    {
+      "yaw": -1.0257280090830072,
+      "pitch": 1.4276809021520016,
+      "title": "Stream: Upstream (ground)",
+      "text": "",
+      "link": "",
+      "category": "link",
+      "pin_style": "label_hover",
+      "target": "img_20260910_092229_00_980"
+    },
+    {
+      "yaw": 2.4049040946821965,
+      "pitch": 1.4682675493101867,
+      "title": "Stream: Downstream (ground)",
+      "text": "",
+      "link": "",
+      "category": "link",
+      "pin_style": "label_hover",
+      "target": "img_20260910_092432_00_982"
+    },
+    {
+      "yaw": 2.723940779781401,
+      "pitch": 1.1763661368113638,
+      "title": "Downstream View (aerial)",
+      "text": "",
+      "link": "",
+      "category": "link",
+      "pin_style": "label_hover",
+      "target": "dji_20260910094215_0003_d"
+    },
+    {
+      "yaw": -0.8542506622760406,
+      "pitch": 0.9581045605904528,
+      "title": "Upstream View (aerial)",
+      "text": "",
+      "link": "",
+      "category": "link",
+      "pin_style": "label_hover",
+      "target": "dji_20260910093956_0001_d"
+    },
+    {
+      "yaw": -2.7534141797996092,
+      "pitch": 1.2438260256536182,
+      "title": "Road: South View",
+      "text": "",
+      "link": "",
+      "category": "link",
+      "pin_style": "label_hover",
+      "target": "img_20260910_092523_00_983"
+    },
+    {
+      "yaw": 0.3286073246126353,
+      "pitch": 1.5529935212951163,
+      "title": "Road: Bridge Deck View",
+      "text": "",
+      "link": "",
+      "category": "link",
+      "pin_style": "label_hover",
+      "target": "img_20260910_092552_00_984"
+    },
+    {
+      "yaw": 0.4539929671861529,
+      "pitch": 1.0716500621877074,
+      "title": "Road: North View",
+      "text": "",
+      "link": "",
+      "category": "link",
+      "pin_style": "label_hover",
+      "target": "img_20260910_092626_00_985"
+    },
+    {
+      "yaw": -2.404682588768889,
+      "pitch": 1.5412792018590444,
+      "title": "Stream: Underneath View (ground)",
+      "text": "",
+      "link": "",
+      "category": "link",
+      "pin_style": "label_hover",
+      "target": "img_20260910_092340_00_981"
+    }
+  ],
+  "hotspots_2": [],
+  "levels_1": [],
+  "levels_2": [],
+  "pin_style": "dot",
+  "basemap_type": "xyz_tile",
+  "basemap_url": "https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",
+  "mobile_1": 5000,
+  "mobile_2": 0,
+  "heading_offset": null
+}

@@ -1,0 +1,34 @@
+{
+  "mode": "single",
+  "format": "raw",
+  "yaw_1": 0.05957199124142498,
+  "pitch_1": 0.3432834420757409,
+  "yaw_2": 0.0,
+  "pitch_2": 0.0,
+  "lat": 46.95622222222222,
+  "lng": -122.79680555555555,
+  "label_1": "IMG_20260910_092552_00_984 (2026/09/10)",
+  "label_2": "",
+  "autorotate": false,
+  "hotspots_1": [
+    {
+      "yaw": 3.141592653589793,
+      "pitch": 0,
+      "title": "Overview (aerial)",
+      "text": "",
+      "link": "",
+      "category": "link",
+      "pin_style": "label_hover",
+      "target": "dji_20260910094409_0004_d"
+    }
+  ],
+  "hotspots_2": [],
+  "levels_1": [],
+  "levels_2": [],
+  "pin_style": "dot",
+  "basemap_type": "xyz_tile",
+  "basemap_url": "https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",
+  "mobile_1": 5000,
+  "mobile_2": 0,
+  "heading_offset": null
+}
