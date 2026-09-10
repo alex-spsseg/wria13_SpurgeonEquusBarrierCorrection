@@ -1,8 +1,8 @@
 {
   "mode": "single",
   "format": "raw",
-  "yaw_1": -0.38458493168030833,
-  "pitch_1": 0.19790270775714447,
+  "yaw_1": -0.28134270225016955,
+  "pitch_1": 0.01607418603979127,
   "yaw_2": 0.0,
   "pitch_2": 0.0,
   "lat": 46.95627777777778,
@@ -12,8 +12,8 @@
   "autorotate": false,
   "hotspots_1": [
     {
-      "yaw": 3.141592653589793,
-      "pitch": 0,
+      "yaw": 5.861729273882089,
+      "pitch": -0.8278982224845777,
       "title": "Overview (aerial)",
       "text": "",
       "link": "",
@@ -30,5 +30,5 @@
   "basemap_url": "https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",
   "mobile_1": 5000,
   "mobile_2": 0,
-  "heading_offset": null
+  "heading_offset": 126.4666017204737
 }

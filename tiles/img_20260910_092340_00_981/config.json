@@ -12,8 +12,8 @@
   "autorotate": false,
   "hotspots_1": [
     {
-      "yaw": 3.141592653589793,
-      "pitch": 0,
+      "yaw": 5.324075240847808,
+      "pitch": -1.375462462887885,
       "title": "Overview (aerial)",
       "text": "",
       "link": "",
@@ -30,5 +30,5 @@
   "basemap_url": "https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",
   "mobile_1": 5000,
   "mobile_2": 0,
-  "heading_offset": null
+  "heading_offset": 80.33052643711636
 }
