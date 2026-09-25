@@ -128,6 +128,50 @@
     still distinguishes the two panels in Compare/Curtain tour stops. */
     body.is-tour #label-left { display: none; }
 
+    #flat-stop-viewer {
+      display: none; position: absolute; inset: 0; z-index: 600;
+      background: #0e1b33; flex-direction: column;
+    }
+    #flat-stop-viewer.visible { display: flex; }
+    #flat-stop-caption {
+      flex: none; padding: 14px 20px; font-size: 15px; font-weight: 600; color: #ffffff;
+      background: rgba(14, 27, 51, 0.9); border-bottom: 1px solid #1b3f95;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    #flat-stop-caption-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    #flat-stop-zoom-hint { flex: none; font-size: 11px; font-weight: 400; color: #9fb2cc; }
+    /* The pdf.js-rendered canvas (or the plain image) is panned and
+    zoomed by transforming #flat-stop-zoom-wrap itself, not by
+    scrolling -- see wirePanZoom. #flat-stop-body is the fixed
+    viewport window onto it and clips anything panned outside it. */
+    #flat-stop-body {
+      flex: 1; min-height: 0; position: relative; overflow: hidden;
+      cursor: grab; touch-action: none;
+    }
+    #flat-stop-body.dragging { cursor: grabbing; }
+    #flat-stop-zoom-wrap {
+      position: absolute; top: 0; left: 0; transform-origin: 0 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    #flat-stop-image, #flat-stop-canvas { display: none; max-width: none; }
+    #flat-stop-canvas { box-shadow: 0 0 24px rgba(0,0,0,0.5); }
+    #flat-stop-pdf-wrap { display: none; width: 100%; height: 100%; flex-direction: column; }
+    #flat-stop-pdf { flex: 1; border: none; background: #ffffff; }
+    /* A PDF iframe just renders blank (no error, nothing to catch) on
+    a browser without a built-in PDF viewer, mobile Safari being the
+    common case -- so this link is always shown alongside it, not
+    just as a fallback, rather than leaving a dead-looking blank pane
+    as the only option there. This iframe path is now only a
+    fallback for when pdf.js itself fails to load or render (see
+    showFlatStop/renderFlatPdf) -- the normal path renders the page
+    onto #flat-stop-canvas instead, so it can be rotated to landscape
+    and panned/zoomed the same way an image is. */
+    #flat-stop-pdf-link {
+      flex: none; text-align: center; padding: 10px; background: rgba(14, 27, 51, 0.9);
+      color: #7fd4ea; font-size: 13px; text-decoration: none; border-top: 1px solid #1b3f95;
+    }
+    #flat-stop-pdf-link:hover { text-decoration: underline; }
+
     #status-banner {
       position: absolute; top: 0; left: 0; width: 100%; z-index: 2000;
       background: rgba(180, 40, 40, 0.92); color: #ffffff; text-align: center;
@@ -170,6 +214,12 @@
     #site-map-zoomto-btn { right: 44px; }
     #site-map-basemap-btn { right: 80px; font-size: 16px; display: none; }
     #site-map-fit-btn:hover, #site-map-basemap-btn:hover, #site-map-zoomto-btn:hover { background: #f4f4f4; }
+    /* Leaflet's own layers control (added for overlays -- see
+    ensureMapInitialized) defaults to the same top-right corner as the
+    fit/zoom/basemap buttons above, sitting directly behind them.
+    Pushing the whole top-right Leaflet control stack down clears
+    that row instead of the two overlapping. */
+    #site-map-panel .leaflet-top.leaflet-right { margin-top: 42px; }
     /* Armed state (waiting for the map click that picks the zoom
     point) gets a highlighted border so it reads as "active tool"
     rather than a plain hover, and the cursor change over the map
@@ -307,6 +357,12 @@
     .hotspot-pin.hotspot-cat-issue::after { content: '!'; }
     .hotspot-pin.hotspot-cat-measurement::after { content: 'M'; font-size: 12px; }
     .hotspot-pin.hotspot-cat-link::after { content: '\2197'; font-size: 15px; }
+    /* Overridden per-pin below when spot.link_icon === 'aerial' (see
+    the Icon field in the hotspot form) -- ground stays the plain
+    arrow above, chosen explicitly rather than inferred, so it never
+    changes on its own just because a target site gets reprocessed. */
+    .hotspot-pin.hotspot-cat-link.hotspot-link-aerial::after { content: '\2708'; font-size: 13px; }
+    .hotspot-pin.hotspot-cat-link.hotspot-link-overview::after { content: '\2302'; font-size: 15px; }
     .hotspot-pin.hotspot-cat-photo::after {
       content: '';
       width: 100%; height: 100%;
@@ -535,7 +591,7 @@
 </head>
 <body>
 
-  <div id="build-timestamp">Built 2026-09-10 13:43:29</div>
+  <div id="build-timestamp">Built 2026-09-25 16:11:38</div>
 
   <div id="status-banner"></div>
 
@@ -553,6 +609,23 @@
       </div>
     </div>
     <div class="pano-label" id="label-right">Comparison View</div>
+
+    <div id="flat-stop-viewer">
+      <div id="flat-stop-caption">
+        <span id="flat-stop-caption-text"></span>
+        <span id="flat-stop-zoom-hint">Drag to pan &middot; scroll to zoom &middot; double-click to reset</span>
+      </div>
+      <div id="flat-stop-body">
+        <div id="flat-stop-zoom-wrap">
+          <img id="flat-stop-image" alt="">
+          <canvas id="flat-stop-canvas"></canvas>
+        </div>
+        <div id="flat-stop-pdf-wrap">
+          <iframe id="flat-stop-pdf" title="Plan"></iframe>
+          <a id="flat-stop-pdf-link" target="_blank" rel="noopener">Open in a new tab &#8599;</a>
+        </div>
+      </div>
+    </div>
 
     <div id="curtain-slider"><div id="curtain-slider-handle">↔</div></div>
 
@@ -824,6 +897,16 @@
       });
     }
 
+    // A Link hotspot's icon is an explicit per-pin choice (the Icon
+    // field in the hotspot form, saved as spot.link_icon), not
+    // inferred from the target site -- so applying it is just a class
+    // toggle, no fetch needed.
+    function applyLinkHotspotIcon(el, spot) {
+      var isLink = spot.category === 'link';
+      el.classList.toggle('hotspot-link-aerial', isLink && spot.link_icon === 'aerial');
+      el.classList.toggle('hotspot-link-overview', isLink && spot.link_icon === 'overview');
+    }
+
     var container = document.getElementById('container');
     var panelR = document.getElementById('pano-right');
     var wrapperR = document.getElementById('pano-right-wrapper');
@@ -1080,6 +1163,7 @@
           pendingMapData = {
             type: 'single', lat: config.lat, lng: config.lng, label: pageTitle,
             basemapType: config.basemap_type || 'osm', basemapUrl: config.basemap_url || '',
+            overlays: config.overlays || [],
           };
           mapToggleBtn.style.display = 'inline-block';
         }
@@ -1580,6 +1664,7 @@
     function buildHotspotPin(spot) {
       var el = document.createElement('div');
       el.className = 'hotspot-pin hotspot-cat-' + (spot.category || 'note') + pinStyleClass(spot);
+      applyLinkHotspotIcon(el, spot);
       el.setAttribute('data-title', spot.title || '');
 
       var tip = document.createElement('div');
@@ -2023,6 +2108,80 @@
         basemapToggleBtn.title = 'Switch to OpenStreetMap';
       } else {
         osmLayer.addTo(siteMap);
+      }
+      // Overlays sit independently of the base layer above (e.g. a
+      // georeferenced site plan over satellite imagery, or two
+      // different flight dates to compare), so they get Leaflet's own
+      // layers control rather than the single-layer toggle button
+      // above, which only ever swaps between exactly two base layers.
+      // Passing null for the base-layer argument keeps that control
+      // out of this list, so there's no second, conflicting way to
+      // switch basemaps.
+      // Which ones start checked is the GUI's own "On by default"
+      // choice per overlay (see _build_overlay_editor), not something
+      // decided here -- several full-coverage overlays defaulting on
+      // at once (e.g. two orthophoto dates covering the same area)
+      // just show whichever was added last, making the others look
+      // like they "aren't showing up" when they're really just fully
+      // covered, so leaving that call to whoever set the overlay up
+      // avoids that by default while still allowing it deliberately.
+      var overlays = (pendingMapData && pendingMapData.overlays) || [];
+      if (overlays.length) {
+        var overlayLayers = {};
+        overlays.forEach((o, idx) => {
+          if (!o.url) return;
+          var opacity = typeof o.opacity === 'number' ? o.opacity : 1;
+          var layer;
+          // Each overlay gets its own dedicated Leaflet pane with an
+          // explicit, unambiguous z-index, rather than relying on a
+          // tile layer's own zIndex option -- that option has to sit
+          // correctly relative to the base map layer sharing the
+          // same default pane, and evidently that interaction wasn't
+          // reliable. A custom pane per layer sidesteps that
+          // entirely: each one is its own isolated stacking context,
+          // so there's nothing left for it to conflict with. Panes
+          // between 210 and 399 sit above the base map (tilePane,
+          // 200) and below markers/popups (600+), and higher list
+          // position gets a higher number here, same top-of-list-on-
+          // top convention as the Move Up/Move Down help text.
+          var paneName = 'overlay-pane-' + idx;
+          if (!siteMap.getPane(paneName)) {
+            var pane = siteMap.createPane(paneName);
+            pane.style.zIndex = 210 + (overlays.length - idx);
+            pane.style.pointerEvents = 'none'; // re-enabled below only for feature layers (need clicks)
+          }
+          if (o.type === 'feature' && window.L && L.esri && L.esri.featureLayer) {
+            // Real geometry (points/lines/polygons) from a Hosted
+            // Feature Layer, not pixels -- stays sharp at any zoom
+            // and is clickable, unlike a rasterized version of the
+            // same data would be. One flat color per layer (no
+            // per-attribute styling) keeps this a lightweight
+            // reference layer rather than a second copy of AGOL's
+            // own Map Viewer.
+            siteMap.getPane(paneName).style.pointerEvents = 'auto';
+            var color = o.color || '#019fc4';
+            layer = L.esri.featureLayer({
+              url: o.url, pane: paneName,
+              style: function () { return { color: color, weight: 2, fillColor: color, fillOpacity: opacity * 0.35, opacity: opacity }; },
+            });
+            layer.bindPopup(l => {
+              var props = (l.feature && l.feature.properties) || {};
+              var rows = Object.keys(props)
+                  .filter(k => props[k] !== null && props[k] !== '')
+                  .map(k => '<tr><td style="font-weight:600;padding-right:10px;">' + escapeHtml(k) +
+                             '</td><td>' + escapeHtml(String(props[k])) + '</td></tr>')
+                  .join('');
+              return rows ? '<table style="font-size:12px;">' + rows + '</table>' : '(no attributes)';
+            });
+          } else {
+            layer = L.tileLayer(o.url, { maxZoom: 22, opacity: opacity, attribution: 'Imagery: SPSSEG', pane: paneName });
+          }
+          overlayLayers[o.label || 'Overlay'] = layer;
+          if (o.default_on !== false) layer.addTo(siteMap);
+        });
+        if (Object.keys(overlayLayers).length) {
+          L.control.layers(null, overlayLayers, { collapsed: true }).addTo(siteMap);
+        }
       }
       // Resizing the panel (see the CSS `resize: both`) changes
       // #site-map's dimensions, but Leaflet only measures its
@@ -2532,6 +2691,12 @@
         '</select>' +
         '<div class="hf-target-row" style="display:none;">' +
         '<label>Target Site ID</label>' + targetFieldMarkup() +
+        '<label>Icon</label>' +
+        '<select class="hf-link-icon">' +
+        '<option value="ground">Ground-level (arrow)</option>' +
+        '<option value="aerial">Aerial / drone (plane)</option>' +
+        '<option value="overview">Overview (birds-eye)</option>' +
+        '</select>' +
         '<label class="hf-return-link-label" style="display:none;">' +
         '<input type="checkbox" class="hf-return-link" checked> Also add a return link back here</label>' +
         '</div>' +
@@ -2601,6 +2766,7 @@
         if (category === 'link') {
           spot.target = form.querySelector('.hf-target').value.trim()
               .toLowerCase().replace(/[\s-]+/g, '_');
+          spot.link_icon = form.querySelector('.hf-link-icon').value;
           wantsReturnLink = canReturnLink && spot.target &&
               form.querySelector('.hf-return-link').checked;
         }
@@ -2650,6 +2816,12 @@
         '</select>' +
         '<div class="hf-target-row" style="display:none;">' +
         '<label>Target Site ID</label>' + targetFieldMarkup() +
+        '<label>Icon</label>' +
+        '<select class="hf-link-icon">' +
+        '<option value="ground">Ground-level (arrow)</option>' +
+        '<option value="aerial">Aerial / drone (plane)</option>' +
+        '<option value="overview">Overview (birds-eye)</option>' +
+        '</select>' +
         '<button type="button" class="hf-calibrate-heading" style="display:none; margin-top:8px;">' +
         'Calibrate Heading From This Position</button>' +
         '</div>' +
@@ -2670,6 +2842,7 @@
       form.querySelector('.hf-link').value = spot.link || '';
       form.querySelector('.hf-cat').value = spot.category || 'note';
       form.querySelector('.hf-target').value = spot.target || '';
+      form.querySelector('.hf-link-icon').value = spot.link_icon || 'ground';
       form.querySelector('.hf-pinstyle').value = spot.pin_style || 'label_hover';
       var currentImages = spotImages(spot).slice(); // local working copy; only committed on Save
       var imageListEl = form.querySelector('.hf-image-list');
@@ -2776,13 +2949,16 @@
         if (category === 'link') {
           spot.target = form.querySelector('.hf-target').value.trim()
               .toLowerCase().replace(/[\s-]+/g, '_');
+          spot.link_icon = form.querySelector('.hf-link-icon').value;
         } else {
           delete spot.target;
+          delete spot.link_icon;
         }
 
         function finish() {
           pin.el.setAttribute('data-title', spot.title);
           pin.el.className = 'hotspot-pin hotspot-cat-' + spot.category + pinStyleClass(spot);
+          applyLinkHotspotIcon(pin.el, spot);
           updateHotspotTooltipBody(pin.body, spot);
           close();
           refreshHotspotList();
@@ -2913,6 +3089,253 @@
                                       // the browser tab title showing "Tour \u2014 Stop"
       var activeLink = null;
 
+      // -- flat (non-pano) tour stops -----------------------------------
+      // A stop published via "Flat image or PDF" (see write_flat_config
+      // in the publisher) has mode: "flat" in its config.json instead of
+      // any of the usual pano fields. Both call sites in loadStop below
+      // check that before touching Marzipano at all -- these two
+      // functions just show/hide the overlay and leave the pano
+      // viewer's own state alone underneath it. Nested here (not at
+      // the top level) so they can close over sceneCache and
+      // tourNameForTitle, both local to this tour instance.
+      function hideFlatStop() {
+        document.getElementById('flat-stop-viewer').classList.remove('visible');
+        document.getElementById('flat-stop-image').style.display = 'none';
+        document.getElementById('flat-stop-image').src = '';
+        document.getElementById('flat-stop-canvas').style.display = 'none';
+        document.getElementById('flat-stop-pdf-wrap').style.display = 'none';
+        document.getElementById('flat-stop-pdf').src = '';
+        document.getElementById('pano-left').style.visibility = '';
+        document.getElementById('pano-right-wrapper').style.visibility = '';
+        document.getElementById('autorotate-btn').style.display = '';
+        document.getElementById('reset-btn').style.display = '';
+        if (isLocalPreview) document.getElementById('edit-tools-panel').style.display = 'flex';
+        // map-toggle-btn and hotspots-toggle-btn are deliberately NOT
+        // restored here -- both are already conditional per-stop
+        // (shown only when that stop actually has GPS or hotspots),
+        // and the normal per-stop config loading that runs right
+        // after this, for whatever pano comes next, already sets
+        // them correctly for that stop's own data. Forcing them back
+        // on here would just show them for a beat before that
+        // happens, or wrongly for a stop that has neither.
+      }
+
+      function showFlatStop(sid, config, fallbackLabel) {
+        var label = config.label || fallbackLabel;
+        document.getElementById('flat-stop-caption-text').textContent = label;
+        document.getElementById('label-left').innerText = label;
+        document.title = tourNameForTitle + ' \u2014 ' + label;
+
+        var fileUrl = 'tiles/' + sid + '/' + (config.file || '');
+        var imgEl = document.getElementById('flat-stop-image');
+        var canvasEl = document.getElementById('flat-stop-canvas');
+        var pdfWrap = document.getElementById('flat-stop-pdf-wrap');
+        imgEl.style.display = 'none';
+        canvasEl.style.display = 'none';
+        pdfWrap.style.display = 'none';
+        // Marked visible before rendering starts, not after: renderFlatPdf
+        // measures #flat-stop-body's width to decide render resolution, and
+        // that's 0 while the container is still display:none.
+        document.getElementById('flat-stop-viewer').classList.add('visible');
+        if (/\.pdf$/i.test(config.file || '')) {
+          document.getElementById('flat-stop-pdf-link').href = fileUrl;
+          renderFlatPdf(fileUrl);
+        } else {
+          imgEl.src = fileUrl;
+          imgEl.onload = () => { imgEl.style.display = 'block'; wirePanZoom(imgEl.naturalWidth, imgEl.naturalHeight); };
+          document.getElementById('flat-stop-pdf').src = '';
+        }
+
+        // Pano panels stay underneath (visibility, not display, so
+        // Marzipano's own size math never sees a zero-size container),
+        // fully covered by the flat overlay above them. Editing tools,
+        // the site map, hotspots, and the pano-only controls don't
+        // apply to a flat file, so they're hidden rather than left
+        // sitting there doing nothing -- or in the map's case,
+        // floating on top of the PDF/image since it's an absolutely
+        // positioned panel that doesn't know a flat stop replaced the
+        // pano underneath it.
+        document.getElementById('pano-left').style.visibility = 'hidden';
+        document.getElementById('pano-right-wrapper').style.visibility = 'hidden';
+        document.getElementById('autorotate-btn').style.display = 'none';
+        document.getElementById('reset-btn').style.display = 'none';
+        document.getElementById('edit-tools-panel').style.display = 'none';
+        document.getElementById('map-toggle-btn').style.display = 'none';
+        document.getElementById('hotspots-toggle-btn').style.display = 'none';
+        siteMapPanel.style.display = 'none';
+        mapToggleBtn.textContent = 'Show Map';
+
+        sceneCache[sid] = { flat: true, config: config, label: label };
+      }
+
+      // -- pdf.js: render page 1 onto a canvas, auto-rotated to landscape ----
+      // Handing the PDF to Chrome's own built-in viewer (a plain iframe src)
+      // works, but that viewer is a separate app UI bolted on top of this
+      // one, and it has no way to default to a rotated, panned, zoomed view
+      // -- the person has to fix all of that by hand, every time, through a
+      // toolbar menu. Rendering the page ourselves with pdf.js instead means
+      // the result is just a plain image (a canvas) that the exact same
+      // pan/zoom code below already knows how to handle for a flat image
+      // stop, and it means the auto-rotate-to-landscape heuristic below is
+      // possible at all, which an iframe can't do.
+      var pdfjsLoadPromise = null;
+      function loadPdfJs() {
+        if (pdfjsLoadPromise) return pdfjsLoadPromise;
+        var PDFJS_VERSION = '3.11.174';
+        pdfjsLoadPromise = new Promise((resolve, reject) => {
+          if (window.pdfjsLib) { resolve(window.pdfjsLib); return; }
+          var script = document.createElement('script');
+          script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/' + PDFJS_VERSION + '/pdf.min.js';
+          script.onload = () => {
+            if (!window.pdfjsLib) { reject(new Error('pdfjsLib missing after load')); return; }
+            window.pdfjsLib.GlobalWorkerOptions.workerSrc =
+                'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/' + PDFJS_VERSION + '/pdf.worker.min.js';
+            resolve(window.pdfjsLib);
+          };
+          script.onerror = () => reject(new Error('failed to load pdf.js'));
+          document.head.appendChild(script);
+        });
+        return pdfjsLoadPromise;
+      }
+      function showFlatPdfFallback(fileUrl) {
+        // pdf.js failed to load or render (offline, CORS on the tile
+        // host, a malformed PDF, whatever) -- fall back to the plain
+        // iframe approach rather than showing nothing. No rotation
+        // control here beyond what the browser's own viewer offers,
+        // but "readable, if a bit clunky" beats "blank."
+        document.getElementById('flat-stop-pdf').src = fileUrl + '#navpanes=0';
+        document.getElementById('flat-stop-pdf-wrap').style.display = 'flex';
+        document.getElementById('flat-stop-canvas').style.display = 'none';
+      }
+      var flatPdfRenderToken = 0;
+      function renderFlatPdf(fileUrl) {
+        var myToken = ++flatPdfRenderToken; // stale-response guard if stops are switched quickly
+        var canvasEl = document.getElementById('flat-stop-canvas');
+        loadPdfJs().then(pdfjsLib => pdfjsLib.getDocument(fileUrl).promise)
+            .then(pdf => pdf.getPage(1))
+            .then(page => {
+              if (myToken !== flatPdfRenderToken) return;
+              // Plan sheets are routinely authored in portrait with the
+              // drawing itself rotated 90 degrees to fit a portrait-bound
+              // sheet set (meant to be read after physically rotating the
+              // printed page) -- a portrait-shaped page here almost
+              // always means "rotate me," so that's the default. Actual
+              // portrait documents (a memo, a single photo page) are the
+              // exception, not the common case for what this feature is
+              // for (engineering plans), so this errs toward the common
+              // case rather than adding a page-content heuristic that
+              // would be far less reliable than page shape.
+              var base = page.getViewport({ scale: 1 });
+              var rotate = base.width < base.height ? 90 : 0;
+              var targetPixelWidth = Math.min(3000, (flatStopBody().clientWidth || 1200) * 2.5);
+              var unscaled = page.getViewport({ scale: 1, rotation: rotate });
+              var scale = targetPixelWidth / unscaled.width;
+              var viewport = page.getViewport({ scale: scale, rotation: rotate });
+              canvasEl.width = viewport.width;
+              canvasEl.height = viewport.height;
+              return page.render({ canvasContext: canvasEl.getContext('2d'), viewport: viewport }).promise;
+            })
+            .then(() => {
+              if (myToken !== flatPdfRenderToken) return;
+              canvasEl.style.display = 'block';
+              wirePanZoom(canvasEl.width, canvasEl.height);
+            })
+            .catch(err => {
+              if (myToken !== flatPdfRenderToken) return;
+              console.warn('pdf.js render failed, falling back to iframe:', err);
+              showFlatPdfFallback(fileUrl);
+            });
+      }
+
+      // -- pan and zoom for the rendered canvas or a plain flat image --------
+      function flatStopBody() { return document.getElementById('flat-stop-body'); }
+      var panZoomState = null; // { scale, minScale, tx, ty } -- rebuilt fresh per stop by wirePanZoom
+      var panZoomWired = false;
+      function wirePanZoom(contentWidth, contentHeight) {
+        var body = flatStopBody();
+        var wrap = document.getElementById('flat-stop-zoom-wrap');
+        wrap.style.width = contentWidth + 'px';
+        wrap.style.height = contentHeight + 'px';
+        // The canvas (or image) is often rendered well above the
+        // container's own CSS size on purpose -- renderFlatPdf
+        // deliberately oversamples so zooming in later still looks
+        // sharp instead of blurry -- so a starting scale of 1 (1
+        // content pixel = 1 CSS pixel) showed only a small cropped
+        // corner of the page, not the whole thing. minScale is
+        // "whole page visible, either edge just touching the
+        // container," and that's the actual starting point and the
+        // floor for zooming back out, not a bare 1.
+        var fitScale = Math.min(body.clientWidth / contentWidth, body.clientHeight / contentHeight);
+        // Never start zoomed further IN than native resolution just
+        // because the container happens to be huge relative to a
+        // small source image -- 1 is still a sensible ceiling for
+        // the starting view, only the floor moves.
+        fitScale = Math.min(fitScale, 1);
+        // tx/ty are the wrap's own top-left corner, in CSS pixels
+        // from #flat-stop-body's top-left -- centering the scaled
+        // content means that corner sits inward from the container's
+        // corner by half of whatever blank space is left over on
+        // each axis.
+        panZoomState = {
+          scale: fitScale, minScale: fitScale,
+          tx: (body.clientWidth - contentWidth * fitScale) / 2,
+          ty: (body.clientHeight - contentHeight * fitScale) / 2,
+        };
+        applyPanZoom(wrap);
+        if (panZoomWired) return; // listeners are on #flat-stop-body itself, only need wiring once
+        panZoomWired = true;
+
+        function applyPanZoom(el) {
+          el.style.transform = 'translate(' + panZoomState.tx + 'px,' + panZoomState.ty + 'px) scale(' + panZoomState.scale + ')';
+        }
+        function resetView() {
+          var w = parseFloat(wrap.style.width), h = parseFloat(wrap.style.height);
+          panZoomState.scale = panZoomState.minScale;
+          panZoomState.tx = (body.clientWidth - w * panZoomState.minScale) / 2;
+          panZoomState.ty = (body.clientHeight - h * panZoomState.minScale) / 2;
+          applyPanZoom(wrap);
+        }
+        body.addEventListener('wheel', e => {
+          if (!panZoomState) return;
+          e.preventDefault();
+          // Cursor position relative to #flat-stop-body's own
+          // top-left, matching tx/ty's frame of reference (see
+          // above) -- this is the standard zoom-toward-a-point
+          // formula for a translate-then-scale-from-(0,0) transform.
+          var rect = body.getBoundingClientRect();
+          var mx = e.clientX - rect.left, my = e.clientY - rect.top;
+          var factor = e.deltaY < 0 ? 1.2 : 1 / 1.2;
+          var next = Math.min(panZoomState.minScale * 10, Math.max(panZoomState.minScale, panZoomState.scale * factor));
+          panZoomState.tx = mx - (mx - panZoomState.tx) * (next / panZoomState.scale);
+          panZoomState.ty = my - (my - panZoomState.ty) * (next / panZoomState.scale);
+          panZoomState.scale = next;
+          if (panZoomState.scale <= panZoomState.minScale * 1.001) { resetView(); return; }
+          applyPanZoom(wrap);
+        }, { passive: false });
+        var dragging = false, lastX = 0, lastY = 0;
+        body.addEventListener('pointerdown', e => {
+          if (!panZoomState) return;
+          dragging = true; lastX = e.clientX; lastY = e.clientY;
+          body.setPointerCapture(e.pointerId);
+          body.classList.add('dragging');
+        });
+        body.addEventListener('pointermove', e => {
+          if (!dragging || !panZoomState) return;
+          panZoomState.tx += e.clientX - lastX;
+          panZoomState.ty += e.clientY - lastY;
+          lastX = e.clientX; lastY = e.clientY;
+          applyPanZoom(wrap);
+        });
+        ['pointerup', 'pointercancel', 'pointerleave'].forEach(ev => body.addEventListener(ev, () => {
+          dragging = false;
+          body.classList.remove('dragging');
+        }));
+        body.addEventListener('dblclick', () => {
+          if (!panZoomState) return;
+          resetView();
+        });
+      }
+
       function loadStop(rawId) {
         var sid = rawId.trim().toLowerCase().replace(/[\s-]+/g, '_');
         var linkEl = siteLinkElements[sid];
@@ -2929,6 +3352,12 @@
         activeTourSiteId = sid;
         updateActiveMapMarker();
 
+        if (sceneCache[sid] && sceneCache[sid].flat) {
+          showFlatStop(sid, sceneCache[sid].config, fallbackLabel);
+          return;
+        }
+        hideFlatStop();
+
         if (sceneCache[sid]) {
           var cached = sceneCache[sid];
           viewL = cached.view;
@@ -2942,6 +3371,8 @@
           currentHeadingOffset = cached.heading || 0;
           headingIsKnown = !!cached.headingKnown;
           updateHeadingDialDisplay();
+          mapToggleBtn.style.display = cached.hasMap ? 'inline-block' : 'none';
+          hotspotsToggleBtn.style.display = cached.hasHotspots ? 'inline-block' : 'none';
           refreshHotspotList();
           return;
         }
@@ -2954,6 +3385,10 @@
             }).then(cfg => { configCache[sid] = cfg; return cfg; });
 
         configPromise.then(config => {
+          if (config.mode === 'flat') {
+            showFlatStop(sid, config, fallbackLabel);
+            return;
+          }
           var isTiled = config.format === 'tiled';
           defaultViewL = { yaw: config.yaw_1 || 0, pitch: config.pitch_1 || 0, fov: Math.PI / 4 };
           // Only ever a fallback for a stop that's still at its
@@ -3006,6 +3441,15 @@
             scene: scene, view: viewL, defaultView: defaultViewL,
             label: resolvedLabel, pinStyle: config.pin_style, heading: config.heading_offset || 0,
             headingKnown: config.heading_offset != null,
+            // A flat stop force-hides both these buttons (see
+            // showFlatStop) and the cache-hit branch above didn't
+            // restore them, so a previously-visited stop's map or
+            // hotspots button stayed hidden after visiting even one
+            // PDF/image stop, permanently, until that stop got
+            // reloaded fresh (uncached) -- looked exactly like "the
+            // map is gone now" rather than what it actually was.
+            hasMap: mapToggleBtn.style.display !== 'none',
+            hasHotspots: hotspotsToggleBtn.style.display !== 'none',
           };
         }).catch(() => {
           showBanner('Could not load "' + sid + '" for this tour.');
@@ -3041,6 +3485,7 @@
             pendingMapData = {
               type: 'tour', sites: sitesWithGps,
               basemapType: manifest.basemap_type || 'osm', basemapUrl: manifest.basemap_url || '',
+              overlays: manifest.overlays || [],
             };
             mapToggleBtn.style.display = 'inline-block';
             openSiteMap();

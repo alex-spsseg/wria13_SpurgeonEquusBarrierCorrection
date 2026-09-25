@@ -39,7 +39,9 @@
       "link": "",
       "category": "link",
       "pin_style": "label_hover",
-      "target": "dji_20260910094215_0003_d"
+      "target": "dji_20260910094215_0003_d",
+      "link_icon": "aerial",
+      "images": []
     },
     {
       "yaw": -0.8542506622760406,
@@ -49,7 +51,9 @@
       "link": "",
       "category": "link",
       "pin_style": "label_hover",
-      "target": "dji_20260910093956_0001_d"
+      "target": "dji_20260910093956_0001_d",
+      "link_icon": "aerial",
+      "images": []
     },
     {
       "yaw": -2.7534141797996092,

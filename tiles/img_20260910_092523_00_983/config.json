@@ -19,7 +19,9 @@
       "link": "",
       "category": "link",
       "pin_style": "label_hover",
-      "target": "dji_20260910094409_0004_d"
+      "target": "dji_20260910094409_0004_d",
+      "link_icon": "overview",
+      "images": []
     }
   ],
   "hotspots_2": [],

@@ -54,10 +54,25 @@
       "display_name": "Road: South View",
       "lat": 46.95605555555556,
       "lng": -122.79677777777778
+    },
+    {
+      "site_id": "pdf_test",
+      "display_name": "Plan Sheet (2024)",
+      "lat": null,
+      "lng": null
     }
   ],
-  "basemap_type": "esri_tile",
-  "basemap_url": "https://tiles.arcgis.com/tiles/buuvDFFARQiOEbVZ/arcgis/rest/services/SpurgeonEquusCulvert_20260910_ortho/MapServer/tile/{z}/{y}/{x}",
+  "basemap_type": "xyz_tile",
+  "basemap_url": "https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",
+  "overlays": [
+    {
+      "label": "Ortho (9/10/2026)",
+      "url": "https://tiles.arcgis.com/tiles/buuvDFFARQiOEbVZ/arcgis/rest/services/SpurgeonEquusCulvert_20260910_ortho/MapServer/tile/{z}/{y}/{x}",
+      "opacity": 1.0,
+      "default_on": true,
+      "type": "tile"
+    }
+  ],
   "forward_label": "Forward",
   "backward_label": "Back"
 }
