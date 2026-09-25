@@ -140,6 +140,18 @@
     }
     #flat-stop-caption-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     #flat-stop-zoom-hint { flex: none; font-size: 11px; font-weight: 400; color: #9fb2cc; }
+    /* Hidden by default -- shown (display:flex) only for a PDF with
+    more than one page, see renderFlatPdf/updatePageNavUI. */
+    #flat-stop-page-nav {
+      display: none; flex: none; align-items: center; gap: 8px;
+      font-size: 12px; font-weight: 400; color: #cbd8ec;
+    }
+    #flat-stop-page-nav button {
+      background: #1b3f95; color: #ffffff; border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 4px; width: 24px; height: 24px; cursor: pointer; font-size: 13px; line-height: 1;
+    }
+    #flat-stop-page-nav button:hover { background: #019fc4; }
+    #flat-stop-page-nav button:disabled { opacity: 0.4; cursor: default; background: #1b3f95; }
     /* The pdf.js-rendered canvas (or the plain image) is panned and
     zoomed by transforming #flat-stop-zoom-wrap itself, not by
     scrolling -- see wirePanZoom. #flat-stop-body is the fixed
@@ -591,7 +603,7 @@
 </head>
 <body>
 
-  <div id="build-timestamp">Built 2026-09-25 16:11:38</div>
+  <div id="build-timestamp">Built 2026-09-25 16:39:43</div>
 
   <div id="status-banner"></div>
 
@@ -613,6 +625,11 @@
     <div id="flat-stop-viewer">
       <div id="flat-stop-caption">
         <span id="flat-stop-caption-text"></span>
+        <span id="flat-stop-page-nav">
+          <button id="flat-stop-prev-page" type="button" title="Previous page">&#8592;</button>
+          <span id="flat-stop-page-label"></span>
+          <button id="flat-stop-next-page" type="button" title="Next page">&#8594;</button>
+        </span>
         <span id="flat-stop-zoom-hint">Drag to pan &middot; scroll to zoom &middot; double-click to reset</span>
       </div>
       <div id="flat-stop-body">
@@ -3087,6 +3104,14 @@
       var siteLinkElements = {}; // site_id -> its sidebar link element, if it has one
       var tourNameForTitle = tourId; // updated once the manifest loads, used to keep
                                       // the browser tab title showing "Tour \u2014 Stop"
+      // The map button/panel are tour-wide, not per-stop -- one map
+      // plots every stop's pin together, shown once when the tour
+      // manifest loads (see the sitesWithGps block below), never
+      // touched again by ordinary per-stop navigation. hideFlatStop
+      // needs this to restore the button correctly after a flat stop
+      // force-hides it, since there's no per-stop logic that would
+      // otherwise ever turn it back on.
+      var tourHasMap = false;
       var activeLink = null;
 
       // -- flat (non-pano) tour stops -----------------------------------
@@ -3105,19 +3130,21 @@
         document.getElementById('flat-stop-canvas').style.display = 'none';
         document.getElementById('flat-stop-pdf-wrap').style.display = 'none';
         document.getElementById('flat-stop-pdf').src = '';
+        document.getElementById('flat-stop-page-nav').style.display = 'none';
         document.getElementById('pano-left').style.visibility = '';
         document.getElementById('pano-right-wrapper').style.visibility = '';
         document.getElementById('autorotate-btn').style.display = '';
         document.getElementById('reset-btn').style.display = '';
         if (isLocalPreview) document.getElementById('edit-tools-panel').style.display = 'flex';
-        // map-toggle-btn and hotspots-toggle-btn are deliberately NOT
-        // restored here -- both are already conditional per-stop
-        // (shown only when that stop actually has GPS or hotspots),
-        // and the normal per-stop config loading that runs right
-        // after this, for whatever pano comes next, already sets
-        // them correctly for that stop's own data. Forcing them back
-        // on here would just show them for a beat before that
-        // happens, or wrongly for a stop that has neither.
+        // The map is tour-wide (see tourHasMap above), not per-stop,
+        // so it's restored directly here rather than left for
+        // per-stop loading to handle -- there is no such per-stop
+        // logic for it in tour mode. hotspots-toggle-btn, by
+        // contrast, genuinely is per-stop (each stop has its own
+        // hotspots), and IS correctly reset by the normal per-stop
+        // loading that runs right after this, for whatever pano
+        // comes next -- so it's deliberately left alone here.
+        if (tourHasMap) mapToggleBtn.style.display = 'inline-block';
       }
 
       function showFlatStop(sid, config, fallbackLabel) {
@@ -3133,6 +3160,7 @@
         imgEl.style.display = 'none';
         canvasEl.style.display = 'none';
         pdfWrap.style.display = 'none';
+        document.getElementById('flat-stop-page-nav').style.display = 'none';
         // Marked visible before rendering starts, not after: renderFlatPdf
         // measures #flat-stop-body's width to decide render resolution, and
         // that's 0 while the container is still display:none.
@@ -3208,37 +3236,18 @@
         document.getElementById('flat-stop-canvas').style.display = 'none';
       }
       var flatPdfRenderToken = 0;
+      var flatPdfDoc = null;    // the currently loaded multi-page PDFDocumentProxy, if any
+      var flatPdfPage = 1;      // 1-based, current page within flatPdfDoc
       function renderFlatPdf(fileUrl) {
         var myToken = ++flatPdfRenderToken; // stale-response guard if stops are switched quickly
-        var canvasEl = document.getElementById('flat-stop-canvas');
+        flatPdfDoc = null;
+        flatPdfPage = 1;
         loadPdfJs().then(pdfjsLib => pdfjsLib.getDocument(fileUrl).promise)
-            .then(pdf => pdf.getPage(1))
-            .then(page => {
+            .then(pdf => {
               if (myToken !== flatPdfRenderToken) return;
-              // Plan sheets are routinely authored in portrait with the
-              // drawing itself rotated 90 degrees to fit a portrait-bound
-              // sheet set (meant to be read after physically rotating the
-              // printed page) -- a portrait-shaped page here almost
-              // always means "rotate me," so that's the default. Actual
-              // portrait documents (a memo, a single photo page) are the
-              // exception, not the common case for what this feature is
-              // for (engineering plans), so this errs toward the common
-              // case rather than adding a page-content heuristic that
-              // would be far less reliable than page shape.
-              var base = page.getViewport({ scale: 1 });
-              var rotate = base.width < base.height ? 90 : 0;
-              var targetPixelWidth = Math.min(3000, (flatStopBody().clientWidth || 1200) * 2.5);
-              var unscaled = page.getViewport({ scale: 1, rotation: rotate });
-              var scale = targetPixelWidth / unscaled.width;
-              var viewport = page.getViewport({ scale: scale, rotation: rotate });
-              canvasEl.width = viewport.width;
-              canvasEl.height = viewport.height;
-              return page.render({ canvasContext: canvasEl.getContext('2d'), viewport: viewport }).promise;
-            })
-            .then(() => {
-              if (myToken !== flatPdfRenderToken) return;
-              canvasEl.style.display = 'block';
-              wirePanZoom(canvasEl.width, canvasEl.height);
+              flatPdfDoc = pdf;
+              updatePageNavUI();
+              return renderFlatPdfPage(myToken);
             })
             .catch(err => {
               if (myToken !== flatPdfRenderToken) return;
@@ -3246,6 +3255,54 @@
               showFlatPdfFallback(fileUrl);
             });
       }
+      function renderFlatPdfPage(myToken) {
+        var canvasEl = document.getElementById('flat-stop-canvas');
+        return flatPdfDoc.getPage(flatPdfPage).then(page => {
+          if (myToken !== flatPdfRenderToken) return;
+          // Plan sheets are routinely authored in portrait with the
+          // drawing itself rotated 90 degrees to fit a portrait-bound
+          // sheet set (meant to be read after physically rotating the
+          // printed page) -- a portrait-shaped page here almost
+          // always means "rotate me," so that's the default. Actual
+          // portrait documents (a memo, a single photo page) are the
+          // exception, not the common case for what this feature is
+          // for (engineering plans), so this errs toward the common
+          // case rather than adding a page-content heuristic that
+          // would be far less reliable than page shape.
+          var base = page.getViewport({ scale: 1 });
+          var rotate = base.width < base.height ? 90 : 0;
+          var targetPixelWidth = Math.min(3000, (flatStopBody().clientWidth || 1200) * 2.5);
+          var unscaled = page.getViewport({ scale: 1, rotation: rotate });
+          var scale = targetPixelWidth / unscaled.width;
+          var viewport = page.getViewport({ scale: scale, rotation: rotate });
+          canvasEl.width = viewport.width;
+          canvasEl.height = viewport.height;
+          return page.render({ canvasContext: canvasEl.getContext('2d'), viewport: viewport }).promise;
+        }).then(() => {
+          if (myToken !== flatPdfRenderToken) return;
+          canvasEl.style.display = 'block';
+          wirePanZoom(canvasEl.width, canvasEl.height);
+        });
+      }
+      function updatePageNavUI() {
+        var nav = document.getElementById('flat-stop-page-nav');
+        var numPages = flatPdfDoc ? flatPdfDoc.numPages : 1;
+        if (numPages <= 1) { nav.style.display = 'none'; return; }
+        nav.style.display = 'flex';
+        document.getElementById('flat-stop-page-label').textContent = 'Page ' + flatPdfPage + ' of ' + numPages;
+        document.getElementById('flat-stop-prev-page').disabled = flatPdfPage <= 1;
+        document.getElementById('flat-stop-next-page').disabled = flatPdfPage >= numPages;
+      }
+      function goToFlatPdfPage(delta) {
+        if (!flatPdfDoc) return;
+        var next = flatPdfPage + delta;
+        if (next < 1 || next > flatPdfDoc.numPages) return;
+        flatPdfPage = next;
+        updatePageNavUI();
+        renderFlatPdfPage(flatPdfRenderToken);
+      }
+      document.getElementById('flat-stop-prev-page').addEventListener('click', () => goToFlatPdfPage(-1));
+      document.getElementById('flat-stop-next-page').addEventListener('click', () => goToFlatPdfPage(1));
 
       // -- pan and zoom for the rendered canvas or a plain flat image --------
       function flatStopBody() { return document.getElementById('flat-stop-body'); }
@@ -3481,6 +3538,7 @@
           tourSiteOptions = sites;
 
           var sitesWithGps = sites.filter(s => s.lat != null && s.lng != null);
+          tourHasMap = sitesWithGps.length > 0;
           if (sitesWithGps.length) {
             pendingMapData = {
               type: 'tour', sites: sitesWithGps,
