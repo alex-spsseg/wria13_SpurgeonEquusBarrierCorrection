@@ -60,6 +60,12 @@
       "display_name": "Plan Sheet (2024)",
       "lat": null,
       "lng": null
+    },
+    {
+      "site_id": "115_tc129_report",
+      "display_name": "FPDSI Report (4/16/2018)",
+      "lat": null,
+      "lng": null
     }
   ],
   "basemap_type": "xyz_tile",
@@ -68,6 +74,13 @@
     {
       "label": "Ortho (9/10/2026)",
       "url": "https://tiles.arcgis.com/tiles/buuvDFFARQiOEbVZ/arcgis/rest/services/SpurgeonEquusCulvert_20260910_ortho/MapServer/tile/{z}/{y}/{x}",
+      "opacity": 1.0,
+      "default_on": true,
+      "type": "tile"
+    },
+    {
+      "label": "Ortho (7/22/2026)",
+      "url": "https://tiles.arcgis.com/tiles/buuvDFFARQiOEbVZ/arcgis/rest/services/SpurgeonEquusCulvert_20260722_ortho/MapServer/tile/{z}/{y}/{x}",
       "opacity": 1.0,
       "default_on": true,
       "type": "tile"
