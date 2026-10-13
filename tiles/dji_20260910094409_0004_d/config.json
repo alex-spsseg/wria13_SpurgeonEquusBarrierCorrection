@@ -104,6 +104,7 @@
   "basemap_url": "https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",
   "mobile_1": 5000,
   "mobile_2": 0,
-  "heading_offset": null,
-  "platform": "aerial"
+  "heading_offset": 331.0577166452915,
+  "platform": "aerial",
+  "heading_confirmed": true
 }

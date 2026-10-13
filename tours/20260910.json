@@ -62,13 +62,15 @@
       "site_id": "pdf_test",
       "display_name": "Plan Sheet (2024)",
       "lat": null,
-      "lng": null
+      "lng": null,
+      "kind": "pdf"
     },
     {
       "site_id": "115_tc129_report",
       "display_name": "FPDSI Report (4/16/2018)",
       "lat": null,
-      "lng": null
+      "lng": null,
+      "kind": "pdf"
     }
   ],
   "basemap_type": "xyz_tile",
