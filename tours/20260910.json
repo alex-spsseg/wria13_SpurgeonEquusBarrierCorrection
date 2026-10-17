@@ -7,6 +7,7 @@
       "lat": 46.95626766666667,
       "lng": -122.79679327777778,
       "platform": "aerial",
+      "overview": true,
       "alt": 119.89,
       "rel_alt": 76.18
     },

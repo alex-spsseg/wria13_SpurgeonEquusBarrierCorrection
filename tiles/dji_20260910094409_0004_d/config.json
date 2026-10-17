@@ -14,7 +14,7 @@
     {
       "yaw": -1.0257280090830072,
       "pitch": 1.4276809021520016,
-      "title": "Stream: Upstream (ground)",
+      "title": "In-Stream: Upstream View",
       "text": "",
       "link": "",
       "category": "link",
@@ -24,7 +24,7 @@
     {
       "yaw": 2.4049040946821965,
       "pitch": 1.4682675493101867,
-      "title": "Stream: Downstream (ground)",
+      "title": "In-Stream: Downstream View",
       "text": "",
       "link": "",
       "category": "link",
@@ -34,7 +34,7 @@
     {
       "yaw": 2.723940779781401,
       "pitch": 1.1763661368113638,
-      "title": "Downstream View (aerial)",
+      "title": "Downstream View",
       "text": "",
       "link": "",
       "category": "link",
@@ -46,7 +46,7 @@
     {
       "yaw": -0.8542506622760406,
       "pitch": 0.9581045605904528,
-      "title": "Upstream View (aerial)",
+      "title": "Upstream View",
       "text": "",
       "link": "",
       "category": "link",
@@ -88,7 +88,7 @@
     {
       "yaw": -2.404682588768889,
       "pitch": 1.5412792018590444,
-      "title": "Stream: Underneath View (ground)",
+      "title": "In-Stream: Under Bridge Deck View",
       "text": "",
       "link": "",
       "category": "link",
@@ -109,5 +109,6 @@
   "heading_confirmed": true,
   "alt_checked": true,
   "alt": 119.89,
-  "rel_alt": 76.18
+  "rel_alt": 76.18,
+  "overview": true
 }

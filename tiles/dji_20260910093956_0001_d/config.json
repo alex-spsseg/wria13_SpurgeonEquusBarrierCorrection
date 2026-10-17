@@ -14,7 +14,7 @@
     {
       "yaw": 6.094611491921537,
       "pitch": -0.4281424172677042,
-      "title": "Overview (aerial)",
+      "title": "Overview",
       "text": "",
       "link": "",
       "category": "link",
@@ -22,6 +22,17 @@
       "target": "dji_20260910094409_0004_d",
       "link_icon": "overview",
       "images": []
+    },
+    {
+      "yaw": 6.277037255592176,
+      "pitch": 0.00201960160383242,
+      "title": "Downstream View",
+      "text": "",
+      "link": "",
+      "category": "link",
+      "pin_style": "label_hover",
+      "target": "dji_20260910094215_0003_d",
+      "link_icon": "aerial"
     }
   ],
   "hotspots_2": [],
