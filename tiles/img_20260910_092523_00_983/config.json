@@ -32,5 +32,7 @@
   "basemap_url": "https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",
   "mobile_1": 5000,
   "mobile_2": 0,
-  "heading_offset": 277.2245795163268
+  "heading_offset": 277.2245795163268,
+  "alt_checked": true,
+  "alt": 66.0
 }

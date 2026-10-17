@@ -6,57 +6,69 @@
       "display_name": "Overview",
       "lat": 46.95626766666667,
       "lng": -122.79679327777778,
-      "platform": "aerial"
+      "platform": "aerial",
+      "alt": 119.89,
+      "rel_alt": 76.18
     },
     {
       "site_id": "dji_20260910094215_0003_d",
       "display_name": "Downstream View",
       "lat": 46.956131750000004,
       "lng": -122.79652727777777,
-      "platform": "aerial"
+      "platform": "aerial",
+      "alt": 66.54,
+      "rel_alt": 22.83
     },
     {
       "site_id": "img_20260910_092432_00_982",
       "display_name": "In-Stream: Downstream View",
       "lat": 46.95622222222222,
-      "lng": -122.79669444444444
+      "lng": -122.79669444444444,
+      "alt": 63.6
     },
     {
       "site_id": "img_20260910_092229_00_980",
       "display_name": "In-Stream: Upstream View",
       "lat": 46.95627777777778,
-      "lng": -122.79686111111111
+      "lng": -122.79686111111111,
+      "alt": 63.7
     },
     {
       "site_id": "img_20260910_092340_00_981",
       "display_name": "In-Stream: Under Bridge Deck View",
       "lat": 46.956250000000004,
-      "lng": -122.79680555555555
+      "lng": -122.79680555555555,
+      "alt": 54.8
     },
     {
       "site_id": "dji_20260910093956_0001_d",
       "display_name": "Upstream View",
       "lat": 46.95632972222222,
       "lng": -122.79711083333333,
-      "platform": "aerial"
+      "platform": "aerial",
+      "alt": 66.64,
+      "rel_alt": 22.93
     },
     {
       "site_id": "img_20260910_092552_00_984",
       "display_name": "Road: Bridge Deck View",
       "lat": 46.95622222222222,
-      "lng": -122.79680555555555
+      "lng": -122.79680555555555,
+      "alt": 64.1
     },
     {
       "site_id": "img_20260910_092626_00_985",
       "display_name": "Road: North View",
       "lat": 46.95655555555556,
-      "lng": -122.79683333333332
+      "lng": -122.79683333333332,
+      "alt": 66.5
     },
     {
       "site_id": "img_20260910_092523_00_983",
       "display_name": "Road: South View",
       "lat": 46.95605555555556,
-      "lng": -122.79677777777778
+      "lng": -122.79677777777778,
+      "alt": 66.0
     },
     {
       "site_id": "pdf_test",
