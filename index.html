@@ -30,15 +30,15 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>WRIA 13 — Spurgeon Equus Barrier Correction</title>
+  <title>WRIA 13 — Spurgeonequusbarriercorrection</title>
   <!-- Link previews (Slack, Teams, email, text messages) read these static tags, since they do
        not run the page's JavaScript. Filled from the repo's Tours Page Settings title and description. -->
   <meta name="description" content="This 360 degree tour documents construction of the fish passage barrier replacement at Equus Road on Spurgeon Creek, a high priority tributary to the Deschutes River in WRIA 13. The site (WDFW FPDSI: 115 TC129) replaces an existing partial barrier identified through SPSSEG&#x27;s 2021 WRIA 13 Barrier Inventory and Prioritization, located immediately upstream of the Thurston County barrier corrections completed in 2022 at Latigo Street and the Chehalis Western Trail crossing.
 
 Work involves removing the existing undersized crossing and installing a prefabricated bridge structure sized to pass the natural channel and floodplain. Once complete, the project opens nearly one mile of high quality spawning and rearing habitat upstream. In-stream work is being completed within the approved fish window, with site planting to follow in winter and spring.">
   <meta property="og:type" content="website">
-  <meta property="og:site_name" content="WRIA 13 — Spurgeon Equus Barrier Correction">
-  <meta property="og:title" content="WRIA 13 — Spurgeon Equus Barrier Correction">
+  <meta property="og:site_name" content="WRIA 13 — Spurgeonequusbarriercorrection">
+  <meta property="og:title" content="WRIA 13 — Spurgeonequusbarriercorrection">
   <meta property="og:description" content="This 360 degree tour documents construction of the fish passage barrier replacement at Equus Road on Spurgeon Creek, a high priority tributary to the Deschutes River in WRIA 13. The site (WDFW FPDSI: 115 TC129) replaces an existing partial barrier identified through SPSSEG&#x27;s 2021 WRIA 13 Barrier Inventory and Prioritization, located immediately upstream of the Thurston County barrier corrections completed in 2022 at Latigo Street and the Chehalis Western Trail crossing.
 
 Work involves removing the existing undersized crossing and installing a prefabricated bridge structure sized to pass the natural channel and floodplain. Once complete, the project opens nearly one mile of high quality spawning and rearing habitat upstream. In-stream work is being completed within the approved fish window, with site planting to follow in winter and spring.">
@@ -1172,6 +1172,12 @@ Work involves removing the existing undersized crossing and installing a prefabr
     .edit-tab:hover { color: #fff; background: rgba(179, 102, 255, 0.22); }
     .edit-tab.on { background: #b366ff; color: #1a0e33; }
     #edit-tools-panel .edit-group { display: none !important; border: 0; padding: 0; }
+    /* Flat stop in local preview: only the Heading and Position blocks apply (aim at a map point or nudge the dial). */
+    body.flat-stop #edit-tools-panel #edit-tabs { display: none !important; }
+    body.flat-stop #edit-tools-panel #heading-group,
+    body.flat-stop #edit-tools-panel #position-group { display: block !important; }
+    body.flat-stop #edit-tools-panel #hotspots-group { display: none !important; }
+    body.flat-stop #hdg-aim-btn { display: none; }
     #edit-tools-panel[data-tab="hotspots-group"] #hotspots-group,
     #edit-tools-panel[data-tab="position-group"] #position-group,
     #edit-tools-panel[data-tab="heading-group"] #heading-group { display: block !important; }
@@ -1280,7 +1286,7 @@ Work involves removing the existing undersized crossing and installing a prefabr
 </head>
 <body>
 
-  <div id="build-timestamp">Built 2026-11-10 09:45:50</div>
+  <div id="build-timestamp">Built 2026-11-24 08:31:35</div>
 
   <div id="status-banner"></div>
 
@@ -1341,11 +1347,12 @@ Work involves removing the existing undersized crossing and installing a prefabr
         <button id="hotspots-toggle-btn" class="ctrl-btn" type="button" style="display:none;"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></span><span class="lbl">Hide Hotspots</span></button>
         <button id="map-toggle-btn" class="ctrl-btn" type="button" style="display:none;"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/></svg></span><span class="lbl">Show Map</span></button>
         <div id="view-menu">
-          <button id="view-menu-toggle" class="ctrl-btn" type="button" aria-haspopup="true" aria-expanded="false" title="Auto-Rotate, Full Screen and Reset View"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg></span><span class="lbl">View</span><span class="caret">&#9662;</span></button>
+          <button id="view-menu-toggle" class="ctrl-btn" type="button" aria-haspopup="true" aria-expanded="false" title="Auto-Rotate, Full Screen, Reset View and Download View"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg></span><span class="lbl">View</span><span class="caret">&#9662;</span></button>
           <div id="view-menu-list">
             <button id="autorotate-btn" class="ctrl-btn" type="button"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg></span><span class="lbl">Auto-Rotate</span></button>
             <button id="fullscreen-btn" class="ctrl-btn" type="button"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></span><span class="lbl">Full Screen</span></button>
             <button id="reset-btn" class="ctrl-btn" type="button"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg></span><span class="lbl">Reset View</span></button>
+            <button id="download-view-btn" class="ctrl-btn" type="button" title="Save the current view as a JPG"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 11l5 5 5-5M5 20h14"/></svg></span><span class="lbl">Download View</span></button>
           </div>
         </div>
         <button id="copy-link-btn" class="ctrl-btn" type="button" style="display:none;" title="Copy a link to this stop and view"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg></span><span class="lbl">Copy Link</span></button>
@@ -2392,6 +2399,186 @@ Work involves removing the existing undersized crossing and installing a prefabr
     })();
     document.getElementById('reset-btn').addEventListener('click', () => resetViews());
 
+    // -- download view as JPG -------------------------------------------
+    // Saves what is on screen (photo only, no map, hotspots or labels).
+    // Marzipano's WebGL canvas is cleared after each frame, so the frame is
+    // rendered again and read in the same tick. Compare modes are composited
+    // from both canvases at their on screen positions (curtain is clipped at
+    // the slider), so the file matches what the visitor sees.
+    (function () {
+      var btn = document.getElementById('download-view-btn');
+      if (!btn) return;
+      var lbl = btn.querySelector('.lbl');
+      var idleText = lbl ? lbl.textContent : 'Download View';
+      var resetTimer = null;
+      function say(msg) {
+        if (!lbl) return;
+        lbl.textContent = msg;
+        clearTimeout(resetTimer);
+        resetTimer = setTimeout(function () { lbl.textContent = idleText; }, 2500);
+      }
+      function cleanPart(t) {
+        return String(t || '').replace(/[\u2014\u2013]/g, ' ').replace(/[^A-Za-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+      }
+      function isFlatShown() {
+        var f = document.getElementById('flat-stop-viewer');
+        return !!(f && f.classList.contains('visible'));
+      }
+      function canvasOf(v) {
+        if (!v) return null;
+        var el = v.stage().domElement();
+        return (el && el.tagName === 'CANVAS') ? el : null;
+      }
+      function intersect(a, b) {
+        var l = Math.max(a.left, b.left), t = Math.max(a.top, b.top);
+        var r = Math.min(a.right, b.right), bt = Math.min(a.bottom, b.bottom);
+        return (r > l && bt > t) ? { left: l, top: t, right: r, bottom: bt } : null;
+      }
+      function buildFileName() {
+        // Tour pages title as "Tour name \u2014 Stop label"; keep just the stop label so filenames stay short.
+        var titleBits = String(document.title || '').split('\u2014');
+        var parts = [cleanPart(titleBits[titleBits.length - 1]) || 'View'];
+        var rightShown = viewerR && !wrapperR.classList.contains('hidden') && wrapperR.style.display !== 'none';
+        var ll = document.getElementById('label-left').innerText;
+        var lr = document.getElementById('label-right').innerText;
+        if (rightShown) {
+          parts.push(cleanPart(ll) + '_vs_' + cleanPart(lr));
+        } else if ((isTimeseriesModeGlobal || (document.getElementById('toggle-btn').style.display !== 'none')) && ll) {
+          parts.push(cleanPart(ll));
+        }
+        var yaw = 0, pitch = 0;
+        try { yaw = viewerL.view().yaw() * 180 / Math.PI; pitch = viewerL.view().pitch() * 180 / Math.PI; } catch (e) {}
+        yaw = ((Math.round(yaw) % 360) + 360) % 360;
+        parts.push('yaw' + yaw);
+        // Marzipano pitch is positive looking down.
+        var pd = Math.round(pitch);
+        parts.push(pd >= 0 ? 'pitchDown' + pd : 'pitchUp' + Math.abs(pd));
+        return parts.filter(Boolean).join('_') + '.jpg';
+      }
+      // Export size: render the viewer at EXPORT_SCALE times its on screen size for the file. Capped so the
+      // drawing buffer stays under MAX_SIDE pixels, which every current browser and GPU handles.
+      var EXPORT_SCALE = 2;
+      var MAX_SIDE = 8192;
+      var busy = false;
+      function waitStable(v, ms) {
+        // Resolves once Marzipano reports every needed tile is loaded at the new size, or after ms.
+        return new Promise(function (resolve) {
+          var st = v.stage(), done = false, t, started = false;
+          function finish() {
+            if (done) return;
+            done = true; clearTimeout(t);
+            st.removeEventListener('renderComplete', onFrame);
+            resolve();
+          }
+          function onFrame(stable) { if (started && stable) finish(); }
+          st.addEventListener('renderComplete', onFrame);
+          // Skip the first frames after the resize, which can report stable before new tiles are requested. The render
+          // loop sleeps when nothing changes, so keep nudging it until a stable frame comes through.
+          var poll = setInterval(function () {
+            if (done) { clearInterval(poll); return; }
+            started = true;
+            try { v.renderLoop().renderOnNextFrame(); } catch (e) {}
+          }, 150);
+          t = setTimeout(function () { clearInterval(poll); finish(); }, ms);
+        });
+      }
+      function capture() {
+        if (busy) return;
+        if (isFlatShown()) { say('Not for flat stops'); return; }
+        var cL = canvasOf(viewerL);
+        if (!cL) { say('Not supported here'); return; }
+        var rightShown = viewerR && !wrapperR.classList.contains('hidden') && wrapperR.style.display !== 'none';
+        var cR = rightShown ? canvasOf(viewerR) : null;
+        if (rightShown && !cR) { say('Not supported here'); return; }
+
+        var viewers = [viewerL].concat(cR ? [viewerR] : []);
+        var saved = viewers.map(function (v) { return { w: v.stage().width(), h: v.stage().height() }; });
+        var big = Math.max.apply(null, saved.map(function (z) { return Math.max(z.w, z.h); }));
+        var ratio = (cL.width && saved[0].w) ? (cL.width / saved[0].w) : 1;   // device pixel ratio
+        var k = Math.max(1, Math.min(EXPORT_SCALE, MAX_SIDE / Math.max(1, big * ratio)));
+        function restore() {
+          viewers.forEach(function (v, n) { try { v.stage().setSize({ width: saved[n].w, height: saved[n].h }); } catch (e) {} });
+          busy = false;
+        }
+        busy = true;
+        if (lbl) { clearTimeout(resetTimer); lbl.textContent = 'Rendering...'; }
+        try {
+          viewers.forEach(function (v, n) { v.stage().setSize({ width: Math.round(saved[n].w * k), height: Math.round(saved[n].h * k) }); });
+        } catch (err) { restore(); say('Could not save'); return; }
+
+        Promise.all(viewers.map(function (v) { return waitStable(v, 6000); })).then(function () {
+          try {
+            // Render now and read in this same tick.
+            viewerL.stage().render();
+            if (cR) viewerR.stage().render();
+
+            var rectL = cL.getBoundingClientRect();
+            var scale = rectL.width ? (cL.width / rectL.width) : 1;
+            var out = { left: rectL.left, top: rectL.top, right: rectL.right, bottom: rectL.bottom };
+            var clipL = rectL;
+            var clipR = null, rectR = null;
+            if (cR) {
+              rectR = cR.getBoundingClientRect();
+              clipR = intersect(rectR, wrapperR.getBoundingClientRect());
+              // Curtain: the left canvas is full width, so the output is the whole screen area it covers.
+              out = {
+                left: Math.min(rectL.left, clipR ? clipR.left : rectL.left),
+                top: Math.min(rectL.top, clipR ? clipR.top : rectL.top),
+                right: Math.max(rectL.right, clipR ? clipR.right : rectL.right),
+                bottom: Math.max(rectL.bottom, clipR ? clipR.bottom : rectL.bottom)
+              };
+              // Side by side: the left canvas ends where the right wrapper begins.
+              if (!container.classList.contains('curtain-mode')) {
+                clipL = intersect(rectL, document.getElementById('pano-left').getBoundingClientRect()) || rectL;
+              }
+            }
+            var W = Math.max(1, Math.round((out.right - out.left) * scale));
+            var H = Math.max(1, Math.round((out.bottom - out.top) * scale));
+            var oc = document.createElement('canvas');
+            oc.width = W; oc.height = H;
+            var ctx = oc.getContext('2d');
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, W, H);
+            var drawClipped = function (canvas, rect, clip) {
+              if (!clip) return;
+              ctx.save();
+              ctx.beginPath();
+              ctx.rect((clip.left - out.left) * scale, (clip.top - out.top) * scale,
+                       (clip.right - clip.left) * scale, (clip.bottom - clip.top) * scale);
+              ctx.clip();
+              ctx.drawImage(canvas, (rect.left - out.left) * scale, (rect.top - out.top) * scale,
+                            rect.width * scale, rect.height * scale);
+              ctx.restore();
+            };
+            drawClipped(cL, rectL, clipL);
+            if (cR) drawClipped(cR, rectR, clipR);
+            var name = buildFileName();
+            // The pixels are copied into oc, so the viewer can go back to its normal size right away.
+            restore();
+            oc.toBlob(function (blob) {
+              if (!blob) { say('Could not save'); return; }
+              var url = URL.createObjectURL(blob);
+              var a = document.createElement('a');
+              a.href = url; a.download = name;
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+              say('Saved');
+            }, 'image/jpeg', 0.95);
+          } catch (err) {
+            restore();
+            say('Could not save');
+          }
+        });
+      }
+      btn.addEventListener('click', capture);
+      // Flat stops show a plain image, not the 360 canvas, so hide the button while one is open.
+      document.getElementById('view-menu-toggle').addEventListener('click', function () {
+        btn.style.display = isFlatShown() ? 'none' : '';
+      });
+    })();
+
     // -- help / info card ----------------------------------------------
     // Step cards for site visitors (not the local preview editing tools).
     // Which steps appear is decided at open time by reading the DOM
@@ -2433,6 +2620,7 @@ Work involves removing the existing undersized crossing and installing a prefabr
         rotate: '<svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg>',
         full: '<svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>',
         reset: '<svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>',
+        download: '<svg viewBox="0 0 24 24"><path d="M12 4v11M7 11l5 5 5-5M5 20h14"/></svg>',
         bookmark: '<svg viewBox="0 0 24 24"><path d="M6 3h12v18l-6-4-6 4z"/></svg>',
         link: '<svg viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>'
       };
@@ -2536,6 +2724,7 @@ Work involves removing the existing undersized crossing and installing a prefabr
           (noAutoRotate ? '' : '<span class="hp-chip"><span class="hp-spin" style="display:inline-flex;">' + CHIP_ICONS.rotate + '</span>Auto-Rotate</span>') +
           '<span class="hp-chip">' + CHIP_ICONS.full + 'Full Screen</span>' +
           '<span class="hp-chip">' + CHIP_ICONS.reset + 'Reset View</span>' +
+          '<span class="hp-chip">' + CHIP_ICONS.download + 'Download View</span>' +
           '</div>'
       };
 
@@ -2693,9 +2882,10 @@ Work involves removing the existing undersized crossing and installing a prefabr
               (noAutoRotate ? '' : mapIco(CHIP_ICONS.rotate, '<b>Auto-Rotate:</b> Slowly pans the view on its own.')) +
               mapIco(CHIP_ICONS.full, '<b>Full Screen:</b> Fills your screen with the viewer.') +
               mapIco(CHIP_ICONS.reset, '<b>Reset View:</b> Returns to where this stop began.') +
+              mapIco(CHIP_ICONS.download, '<b>Download View:</b> Saves what you are looking at as a JPG photo.') +
               (hasCopyLink ? mapIco(CHIP_ICONS.link, '<b>Copy Link:</b> Copies a link to this stop and your current view.') : '') +
             '</ul>' +
-            '<p>On a computer, Auto-Rotate, Full Screen and Reset View are grouped under <b>View</b>. On a phone, every button is under the \u22EE menu. Reopen this guide any time with <b>Help</b>.</p>'
+            '<p>On a computer, Auto-Rotate, Full Screen, Reset View and Download View are grouped under <b>View</b>. On a phone, every button is under the \u22EE menu. Reopen this guide any time with <b>Help</b>.</p>'
         });
         return out;
       }
@@ -6638,8 +6828,8 @@ Work involves removing the existing undersized crossing and installing a prefabr
       function aimAndSave() {
         var btn = document.getElementById('hdg-aim-btn');
         var b = neighborBearing();
-        if (b == null || !viewL) { flash(btn, 'Missing GPS for neighbor', 1800); return; }
-        var yaw = viewL.parameters().yaw * 180 / Math.PI;
+        if (b == null || (!viewL && !flatConeActive)) { flash(btn, 'Missing GPS for neighbor', 1800); return; }
+        var yaw = flatConeActive ? 0 : viewL.parameters().yaw * 180 / Math.PI;
         saveThen((b - yaw + 360) % 360, btn, true);
       }
       var mapArmed = false;
@@ -6652,9 +6842,10 @@ Work involves removing the existing undersized crossing and installing a prefabr
       function mapClick(e) {
         if (!mapArmed) return;
         var me = findTourSiteLatLng(activeTourSiteId);
-        if (!me || !viewL) { setArmed(false); return; }
+        if (!me || (!viewL && !flatConeActive)) { setArmed(false); return; }
         var b = computeBearingJs(me[0], me[1], e.latlng.lat, e.latlng.lng);
-        var yaw = viewL.parameters().yaw * 180 / Math.PI;
+        // A flat photo has no pan: the photo's center is the direction the camera faced.
+        var yaw = flatConeActive ? 0 : viewL.parameters().yaw * 180 / Math.PI;
         setArmed(false);
         saveThen((b - yaw + 360) % 360, document.getElementById('hdg-map-btn'), true);
       }
@@ -7872,6 +8063,7 @@ Work involves removing the existing undersized crossing and installing a prefabr
         // comes next -- so it's deliberately left alone here.
         if (tourHasMap) mapToggleBtn.style.display = 'inline-block';
         flatConeActive = false;
+        document.body.classList.remove('flat-stop');
       }
 
       function showFlatStop(sid, config, fallbackLabel) {
@@ -7918,7 +8110,14 @@ Work involves removing the existing undersized crossing and installing a prefabr
         document.getElementById('pano-right-wrapper').style.visibility = 'hidden';
         document.getElementById('autorotate-btn').style.display = 'none';
         document.getElementById('reset-btn').style.display = 'none';
-        document.getElementById('edit-tools-panel').style.display = 'none';
+        if (location.hostname === '127.0.0.1' || location.hostname === 'localhost') {
+          document.getElementById('edit-tools-panel').style.display = 'flex';
+          document.getElementById('heading-dial-row').style.display = 'block';
+          document.getElementById('position-row').style.display = 'block';
+          document.body.classList.add('flat-stop');
+        } else {
+          document.getElementById('edit-tools-panel').style.display = 'none';
+        }
         document.getElementById('hotspots-toggle-btn').style.display = 'none';
         // The map is tour wide, so it stays available for flat stops
         // (its panel floats above the flat overlay). A flat stop with a
@@ -8495,6 +8694,7 @@ Work involves removing the existing undersized crossing and installing a prefabr
         if (sceneCache[sid]) {
           sceneCache[sid].heading = heading;
           sceneCache[sid].headingKnown = known;
+          if (sceneCache[sid].flat && sceneCache[sid].config) sceneCache[sid].config.heading = heading;
         }
       };
 
